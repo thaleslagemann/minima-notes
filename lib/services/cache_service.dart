@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:minima_notes/models/query_response_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +14,7 @@ class CacheService {
     _init();
   }
 
-  late Database _db;
+  Database? _db;
   // ignore: unused_field
   late SharedPreferences _prefs;
 
@@ -40,13 +41,13 @@ class CacheService {
       onCreate: (db, version) {
         return db.execute(
           '''
-            CREATE TABLE IF NOT EXISTS cache(
+            CREATE TABLE IF NOT EXISTS note(
               uuid TEXT PRIMARY KEY,
               data TEXT,
               metadata TEXT,
               createdAt TIMESTAMP,
-              lastUpdatedAt TIMESTAMP,
-            );
+              lastUpdatedAt TIMESTAMP
+            )
           ''',
         );
       },
@@ -60,38 +61,131 @@ class CacheService {
     _prefs = await SharedPreferences.getInstance();
   }
 
-  Future<bool> cacheStore(String uuid, String data, String? metadata, ConflictAlgorithm? conflictAlgorithm) async {
+  Future<bool> store(String uuid, String data, String? metadata, {String table = 'note'}) async {
     try {
-      if (!_db.isOpen) {
+      if (_db == null || !_db!.isOpen) {
         _db = await openDB();
       }
       int changes = 0;
-      bool uuidExists = (await _db.rawQuery('''SELECT * FROM cache WHERE uuid = ?''', [uuid])).isNotEmpty;
+      bool uuidExists = (await _db!.rawQuery('''SELECT * FROM $table WHERE uuid = ?''', [uuid])).isNotEmpty;
       if (uuidExists) {
-        changes = await _db.rawUpdate(
+        changes = await _db!.rawUpdate(
           '''
-            UPDATE cache
+            UPDATE $table
             SET data = ?, metadata = ?, lastUpdatedAt = ?
             WHERE uuid = ?
           ''',
-          [data, metadata, DateTime.now(), uuid],
+          [
+            data,
+            metadata,
+            DateTime.now().toIso8601String(),
+            uuid,
+          ],
         );
       } else {
-        changes = await _db.rawInsert(
+        changes = await _db!.rawInsert(
           '''
-            INSERT INTO cache(uuid, data, metadata, createdAt, lastUpdatedAt)
-            VALUES (uuid = ?, data = ?, metadata = ?, createdAt = ?, lastUpdatedAt = ?)
+            INSERT INTO $table(uuid, data, metadata, createdAt, lastUpdatedAt)
+            VALUES (?, ?, ?, ?, ?)
           ''',
-          [uuid, data, metadata, DateTime.now(), DateTime.now()],
+          [
+            uuid,
+            data,
+            metadata,
+            DateTime.now().toIso8601String(),
+            DateTime.now().toIso8601String(),
+          ],
         );
       }
       if (changes > 0) return true;
     } catch (e) {
       log('Cache Error @cache_service.store: $e');
     } finally {
-      await _db.close();
+      await _db!.close();
     }
     return false;
+  }
+
+  Future<bool> remove(String uuid, {String table = 'note'}) async {
+    try {
+      if (_db == null || !_db!.isOpen) {
+        _db = await openDB();
+      }
+      int deleted = 0;
+      bool uuidExists = (await _db!.rawQuery('''SELECT * FROM $table WHERE uuid = ?''', [uuid])).isNotEmpty;
+      if (uuidExists) {
+        deleted = await _db!.rawUpdate(
+          '''
+            DELETE FROM $table
+            WHERE uuid = ?
+          ''',
+          [uuid],
+        );
+      }
+      if (deleted > 0) return true;
+    } catch (e) {
+      log('Cache Error @cache_service.remnove: $e');
+    } finally {
+      await _db!.close();
+    }
+    return false;
+  }
+
+  Future<QueryResponseModel> getByUuid(String uuid, {String table = 'note'}) async {
+    if (_db == null || !_db!.isOpen) {
+      _db = await openDB();
+    }
+    List<Map<String, dynamic>>? res;
+    try {
+      res = await _db!.rawQuery(
+        '''
+          SELECT * FROM $table WHERE uuid = ?
+        ''',
+        [uuid],
+      );
+    } catch (e) {
+      log('Cache Error @cache_service.getByUuid: $e');
+    } finally {
+      await _db!.close();
+    }
+    if (res != null) {
+      if (res.length == 1) {
+        return QueryResponseModel(status: '000', msg: 'Retrieval successful!', data: res);
+      } else if (res.length > 1) {
+        return QueryResponseModel(status: '020', msg: 'Multiple entries with same UUID!', data: null);
+      } else {
+        return QueryResponseModel(status: '010', msg: 'No entry found!', data: null);
+      }
+    } else {
+      return QueryResponseModel(status: '100', msg: 'Query error!', data: null);
+    }
+  }
+
+  Future<QueryResponseModel> getAll({String table = 'note'}) async {
+    if (_db == null || !_db!.isOpen) {
+      _db = await openDB();
+    }
+    List<Map<String, dynamic>>? res;
+    try {
+      res = await _db!.rawQuery(
+        '''
+          SELECT * FROM $table
+        ''',
+      );
+    } catch (e) {
+      log('Cache Error @cache_service.getAll: $e');
+    } finally {
+      await _db!.close();
+    }
+    if (res != null) {
+      if (res.isNotEmpty) {
+        return QueryResponseModel(status: '000', msg: 'Retrieval successful!', data: res);
+      } else {
+        return QueryResponseModel(status: '010', msg: 'No entry found!', data: null);
+      }
+    } else {
+      return QueryResponseModel(status: '100', msg: 'Query error!', data: null);
+    }
   }
 }
 
@@ -100,11 +194,13 @@ class TableStruct {
   Map<String, String> fields;
 
   TableStruct({
-    this.tableName = 'cache',
+    this.tableName = 'note',
     this.fields = const {
       'uuid': 'TEXT PRIMARY KEY',
       'data': 'TEXT',
       'metadata': 'TEXT',
+      'createdAt': 'TIMESTAMP',
+      'lastUpdatedAt': 'TIMESTAMP',
     },
   });
 }

@@ -9,11 +9,28 @@ import 'package:minima_notes/models/note_model.dart';
 import 'package:minima_notes/view_models/note_view_model.dart';
 import 'package:uuid/uuid.dart';
 
-class NoteListView extends ConsumerWidget {
+class NoteListView extends ConsumerStatefulWidget {
   const NoteListView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NoteListView> createState() => _NoteListViewState();
+}
+
+class _NoteListViewState extends ConsumerState<NoteListView> {
+  getData() async {
+    Future.microtask(() {
+      ref.read(noteViewModelProvider.notifier).loadAllNotes();
+    });
+  }
+
+  @override
+  initState() {
+    super.initState();
+    getData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final List<Note> notes = ref.watch(noteViewModelProvider);
     final NoteViewModel viewModel = ref.read(noteViewModelProvider.notifier);
 
@@ -70,6 +87,7 @@ class NoteListView extends ConsumerWidget {
                         itemBuilder: (context, index) {
                           return ListTile(
                             title: Text(notes[index].title),
+                            onLongPress: () => _handleDeleteNote(notes[index], viewModel),
                             onTap: () {
                               if (context.mounted) {
                                 Navigator.pushNamed(context, '/note', arguments: notes[index]);
@@ -142,7 +160,7 @@ class NoteListView extends ConsumerWidget {
               onPressed: () {
                 if (formKey.currentState!.validate()) {
                   newNote = Note(
-                    id: const Uuid().v1(),
+                    uuid: const Uuid().v1(),
                     title: titleController.text,
                     content: '',
                   );
@@ -164,5 +182,57 @@ class NoteListView extends ConsumerWidget {
       }
     }
     return;
+  }
+
+  _handleDeleteNote(Note note, NoteViewModel viewModel) async {
+    await showDialog(
+      context: context,
+      useRootNavigator: true,
+      builder: (context) {
+        return MinimaDialog(
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.remove_circle_outline,
+                    color: AppTheme.grey30,
+                    size: 24,
+                  ),
+                  SizedBox(width: 4.0),
+                  Text(
+                    'Delete note?',
+                    style: TextStyle(
+                      color: AppTheme.grey30,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            MinimaButton.ghost(
+              label: 'Cancel',
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+            ),
+            MinimaButton.primary(
+              label: 'Delete',
+              color: AppTheme.errorIndicator,
+              onPressed: () {
+                viewModel.removeNote(note);
+                Navigator.pop(context, true);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

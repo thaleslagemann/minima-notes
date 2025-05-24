@@ -1,46 +1,46 @@
 class Note {
   Note({
-    required this.id,
+    required this.uuid,
     required this.title,
     required this.content,
     DateTime? createdAt,
-    DateTime? lastModifiedAt,
+    DateTime? lastUpdatedAt,
   }) : createdAt = createdAt ?? DateTime.now(),
-       lastModifiedAt = createdAt ?? DateTime.now();
+       lastUpdatedAt = createdAt ?? DateTime.now();
 
-  final String id;
+  final String uuid;
   String title;
   String content;
   DateTime createdAt;
-  DateTime lastModifiedAt;
+  DateTime lastUpdatedAt;
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      'uuid': uuid,
       'title': title,
       'content': content,
       'createdAt': createdAt,
-      'lastModifiedAt': lastModifiedAt,
+      'lastUpdatedAt': lastUpdatedAt,
     };
   }
 
   factory Note.fromMap(Map<String, dynamic> map) {
     return Note(
-      id: map['id'],
+      uuid: map['uuid'],
       title: map['title'],
       content: map['content'],
       createdAt: map['createdAt'],
-      lastModifiedAt: map['lastModifiedAt'],
+      lastUpdatedAt: map['lastUpdatedAt'],
     );
   }
 
   Note copyWith({String? title, String? content}) {
     return Note(
-      id: id,
+      uuid: uuid,
       title: title ?? this.title,
       content: content ?? this.content,
       createdAt: createdAt,
-      lastModifiedAt: DateTime.now(),
+      lastUpdatedAt: DateTime.now(),
     );
   }
 }

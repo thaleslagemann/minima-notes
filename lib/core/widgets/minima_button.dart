@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element_parameter
+
 import 'package:flutter/material.dart';
 import 'package:minima_notes/core/theme/theme.dart';
 
@@ -5,6 +7,7 @@ class MinimaButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String label;
   final ButtonStyle style;
+  final Color? color;
   final IconData? icon;
   final bool forceUpperCase;
 
@@ -14,12 +17,14 @@ class MinimaButton extends StatelessWidget {
     required this.style,
     this.icon,
     this.forceUpperCase = false,
+    this.color,
   });
 
   factory MinimaButton.primary({
     required String label,
     required VoidCallback onPressed,
     IconData? icon,
+    Color color = AppTheme.black,
     bool forceUpperCase = false,
   }) {
     return MinimaButton._(
@@ -28,7 +33,7 @@ class MinimaButton extends StatelessWidget {
       onPressed: onPressed,
       forceUpperCase: forceUpperCase,
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppTheme.black,
+        backgroundColor: color,
         foregroundColor: AppTheme.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(16.0)),
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -40,6 +45,7 @@ class MinimaButton extends StatelessWidget {
     required String label,
     required VoidCallback onPressed,
     IconData? icon,
+    Color color = AppTheme.black,
     bool forceUpperCase = false,
   }) {
     return MinimaButton._(
@@ -49,7 +55,7 @@ class MinimaButton extends StatelessWidget {
       forceUpperCase: forceUpperCase,
       style: OutlinedButton.styleFrom(
         foregroundColor: AppTheme.white,
-        side: const BorderSide(color: AppTheme.black),
+        side: BorderSide(color: color),
         shadowColor: AppTheme.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(16.0)),
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -61,6 +67,7 @@ class MinimaButton extends StatelessWidget {
     required String label,
     required VoidCallback onPressed,
     IconData? icon,
+    Color color = AppTheme.greyD0,
     bool forceUpperCase = false,
   }) {
     return MinimaButton._(
@@ -70,7 +77,7 @@ class MinimaButton extends StatelessWidget {
       forceUpperCase: forceUpperCase,
       style: TextButton.styleFrom(
         foregroundColor: AppTheme.grey40,
-        backgroundColor: AppTheme.greyD0,
+        backgroundColor: color,
         shadowColor: AppTheme.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(16.0)),
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
