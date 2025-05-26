@@ -1,8 +1,11 @@
+import 'package:flutter/widgets.dart';
+
 class Note {
   Note({
     required this.uuid,
     required this.title,
     required this.content,
+    this.icon,
     DateTime? createdAt,
     DateTime? lastUpdatedAt,
   }) : createdAt = createdAt ?? DateTime.now(),
@@ -11,6 +14,7 @@ class Note {
   final String uuid;
   String title;
   String content;
+  IconData? icon;
   DateTime createdAt;
   DateTime lastUpdatedAt;
 
@@ -19,6 +23,7 @@ class Note {
       'uuid': uuid,
       'title': title,
       'content': content,
+      'icon': icon,
       'createdAt': createdAt,
       'lastUpdatedAt': lastUpdatedAt,
     };
@@ -29,16 +34,18 @@ class Note {
       uuid: map['uuid'],
       title: map['title'],
       content: map['content'],
+      icon: map['icon'],
       createdAt: map['createdAt'],
       lastUpdatedAt: map['lastUpdatedAt'],
     );
   }
 
-  Note copyWith({String? title, String? content}) {
+  Note copyWith({String? title, String? content, IconData? icon}) {
     return Note(
       uuid: uuid,
       title: title ?? this.title,
       content: content ?? this.content,
+      icon: icon ?? this.icon,
       createdAt: createdAt,
       lastUpdatedAt: DateTime.now(),
     );

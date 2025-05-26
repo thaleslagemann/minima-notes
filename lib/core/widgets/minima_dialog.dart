@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:minima_notes/core/theme/theme.dart';
 
 class MinimaDialog extends StatelessWidget {
   const MinimaDialog({
@@ -21,6 +22,7 @@ class MinimaDialog extends StatelessWidget {
         content: content,
         actions: actions,
         actionsPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        backgroundColor: AppTheme.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadiusGeometry.circular(16.0),
         ),

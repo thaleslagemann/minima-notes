@@ -15,44 +15,42 @@ class MinimaDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width * 0.75;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        DrawerHeader(
-          margin: EdgeInsets.zero,
-          padding: EdgeInsets.zero,
-          decoration: const BoxDecoration(color: AppTheme.grey10),
-          child: Container(
-            decoration: const BoxDecoration(
-              border: BorderDirectional(
-                end: BorderSide(color: AppTheme.black, width: 2.0),
+    return Drawer(
+      width: width,
+      backgroundColor: AppTheme.white,
+      shape: const BorderDirectional(
+        end: BorderSide(color: AppTheme.black, width: 2.0),
+      ),
+      child: Column(
+        children: [
+          DrawerHeader(
+            margin: EdgeInsets.zero,
+            padding: EdgeInsets.zero,
+            decoration: const BoxDecoration(color: AppTheme.black),
+            child: SizedBox(
+              width: width,
+              child: const Padding(
+                padding: EdgeInsets.only(top: 16.0, left: 16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Welcome to',
+                      style: TextStyle(fontSize: 14, color: AppTheme.greyE0),
+                    ),
+                    Text(
+                      'Minima Notes',
+                      style: TextStyle(fontSize: 24, color: AppTheme.white),
+                    ),
+                  ],
+                ),
               ),
             ),
-            height: 100,
-            width: width,
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(top: 32.0, left: 32.0),
-                  child: Text(
-                    'Minima Notes',
-                    style: TextStyle(fontSize: 24, color: AppTheme.white),
-                  ),
-                ),
-              ],
-            ),
           ),
-        ),
-        Expanded(
-          child: Drawer(
-            width: width,
-            shape: const BorderDirectional(
-              end: BorderSide(color: AppTheme.black, width: 2.0),
-            ),
+          Expanded(
             child: ListView.builder(
+              padding: EdgeInsets.zero,
               itemCount: tiles.length,
               itemBuilder:
                   (context, index) => ListTile(
@@ -63,8 +61,8 @@ class MinimaDrawer extends StatelessWidget {
                   ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

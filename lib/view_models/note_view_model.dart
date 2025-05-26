@@ -22,6 +22,7 @@ class NoteViewModel extends Notifier<List<Note>> {
   }
 
   void updateNote(Note updatedNote) async {
+    updatedNote.lastUpdatedAt = DateTime.now();
     await service.storeNote(updatedNote);
     state = [
       for (final note in state)
