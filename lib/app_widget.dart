@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minima_notes/core/theme/theme.dart';
-import 'package:minima_notes/models/note_model.dart';
 import 'package:minima_notes/services/cache_service.dart';
+import 'package:minima_notes/views/md_tutorial_view.dart';
 import 'package:minima_notes/views/note_list_view.dart';
 import 'package:minima_notes/views/note_view.dart';
 import 'package:minima_notes/views/settings_view.dart';
@@ -42,9 +42,10 @@ class _AppWidgetState extends State<AppWidget> {
         routes: {
           '/notes': (context) => const NoteListView(),
           '/note': (context) {
-            final note = ModalRoute.of(context)!.settings.arguments as Note;
-            return NoteView(note: note);
+            final arguments = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+            return NoteView(note: arguments['note'], firstVisit: arguments['firstVisit']);
           },
+          '/md-tutorial': (context) => const MarkdownTutorialView(),
           '/settings': (context) => const SettingsView(),
         },
         debugShowCheckedModeBanner: false,

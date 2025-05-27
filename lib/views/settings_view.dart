@@ -16,7 +16,7 @@ class SettingsView extends ConsumerWidget {
     ];
 
     return Scaffold(
-      drawer: MinimaDrawer(index: 1),
+      drawer: MinimaDrawer(index: 2),
       appBar: AppBar(
         backgroundColor: AppTheme.grey10,
         title: const Text(

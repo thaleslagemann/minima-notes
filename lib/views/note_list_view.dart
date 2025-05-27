@@ -87,7 +87,11 @@ class _NoteListViewState extends ConsumerState<NoteListView> {
                                 onLongPressCallback: () => _handleLongPress(notes[index], viewModel),
                                 onTapCallback: () {
                                   if (context.mounted) {
-                                    Navigator.pushNamed(context, '/note', arguments: notes[index]);
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/note',
+                                      arguments: <String, dynamic>{'note': notes[index], 'firstVisit': false},
+                                    );
                                   }
                                 },
                               );
@@ -204,7 +208,11 @@ class _NoteListViewState extends ConsumerState<NoteListView> {
     if (add && newNote != null) {
       viewModel.addNote(newNote!);
       if (context.mounted) {
-        Navigator.pushNamed(context, '/note', arguments: newNote);
+        Navigator.pushNamed(
+          context,
+          '/note',
+          arguments: <String, dynamic>{'note': newNote, 'firstVisit': true},
+        );
       }
     }
     return;

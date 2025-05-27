@@ -9,7 +9,8 @@ class MinimaDrawer extends StatelessWidget {
 
   final List<DrawerTile> tiles = [
     DrawerTile(0, title: 'Notes', icon: Icons.notes, route: '/notes'),
-    DrawerTile(1, title: 'Settings', icon: Icons.settings_outlined, route: '/settings'),
+    DrawerTile(1, title: 'Tutorial', icon: Icons.help_outline_rounded, route: '/md-tutorial'),
+    DrawerTile(2, title: 'Settings', icon: Icons.settings_outlined, route: '/settings'),
   ];
 
   @override

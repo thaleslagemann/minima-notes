@@ -8,9 +8,10 @@ import 'package:minima_notes/models/note_model.dart';
 import 'package:minima_notes/view_models/note_view_model.dart';
 
 class NoteView extends ConsumerStatefulWidget {
-  const NoteView({super.key, required this.note});
+  const NoteView({super.key, required this.note, this.firstVisit = false});
 
   final Note note;
+  final bool firstVisit;
 
   @override
   ConsumerState<NoteView> createState() => _NoteViewState();
@@ -74,6 +75,7 @@ class _NoteViewState extends ConsumerState<NoteView> with SingleTickerProviderSt
 
   @override
   void initState() {
+    if (widget.firstVisit) isEditingBody = widget.firstVisit;
     titleController.text = widget.note.title;
     textController = UndoRedoController(text: widget.note.content);
 
