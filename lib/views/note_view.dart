@@ -48,6 +48,13 @@ class _NoteViewState extends ConsumerState<NoteView> with SingleTickerProviderSt
     });
   }
 
+  void _handleViewPressed() {
+    _handleSavePressed();
+    setState(() {
+      isEditingBody = false;
+    });
+  }
+
   void _handleSaveTitlePressed() {
     FocusManager.instance.primaryFocus!.unfocus();
     widget.note.title = titleController.text;
@@ -205,7 +212,7 @@ class _NoteViewState extends ConsumerState<NoteView> with SingleTickerProviderSt
                   Row(
                     children: [
                       Material(
-                        color: AppTheme.white,
+                        color: textController.canUndo ? AppTheme.white : AppTheme.greyB0,
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
                             color: textController.canUndo ? AppTheme.black : AppTheme.grey80,
@@ -271,7 +278,7 @@ class _NoteViewState extends ConsumerState<NoteView> with SingleTickerProviderSt
                   child: InkWell(
                     splashColor: AppTheme.grey40,
                     borderRadius: BorderRadius.circular(16.0),
-                    onTap: _handleEditPressed,
+                    onTap: isEditingBody ? _handleViewPressed : _handleEditPressed,
                     child: SizedBox(
                       width: 48,
                       height: 48,
